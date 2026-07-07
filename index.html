@@ -1,0 +1,2658 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ハグテラス シフト管理</title>
+    <style>
+:root {
+  --bg: #fff7fb;
+  --panel: #ffffff;
+  --panel-soft: #fff0f6;
+  --green: #8ed2c2;
+  --green-dark: #4f8f86;
+  --green-pale: #e9f8f6;
+  --beige: #f6eadc;
+  --peach: #ffe0eb;
+  --pink: #f8aeca;
+  --pink-dark: #b65d81;
+  --pink-pale: #fff0f6;
+  --yellow: #fff4c9;
+  --red: #c4667a;
+  --blue: #5d94b8;
+  --blue-pale: #eaf6ff;
+  --text: #354044;
+  --muted: #748084;
+  --line: #eadde4;
+  --shadow: 0 18px 40px rgba(158, 105, 130, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(234, 246, 255, 0.92) 0, rgba(234, 246, 255, 0) 30%),
+    radial-gradient(circle at 82% 12%, rgba(255, 224, 235, 0.75) 0, rgba(255, 224, 235, 0) 26%),
+    linear-gradient(135deg, #fff8fb 0%, #f3fbff 48%, #fffdf8 100%);
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover,
+.primary-button:hover,
+.sub-button:hover,
+.ghost-button:hover {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='17' r='6' fill='%23f8aeca'/%3E%3Ccircle cx='8' cy='10' r='3' fill='%23f8aeca'/%3E%3Ccircle cx='14' cy='7' r='3' fill='%23f8aeca'/%3E%3Ccircle cx='20' cy='10' r='3' fill='%23f8aeca'/%3E%3C/svg%3E") 6 6, pointer;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 278px;
+  padding: 24px 18px;
+  background: #fffafd;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 24px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--pink), #8fcce7);
+  box-shadow: 0 10px 22px rgba(182, 93, 129, 0.2);
+}
+
+.brand-label,
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.brand h1,
+.topbar h2 {
+  margin: 0;
+}
+
+.brand h1 {
+  font-size: 19px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav button {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 12px;
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.nav button:hover,
+.nav button.active {
+  color: var(--pink-dark);
+  background: linear-gradient(135deg, var(--pink-pale), var(--blue-pale));
+  border-color: #f2bdd3;
+}
+
+.main {
+  width: calc(100% - 278px);
+  margin-left: 278px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 92px;
+  padding: 22px 34px;
+  background: rgba(255, 247, 251, 0.92);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+
+.topbar h2 {
+  font-size: 26px;
+}
+
+.topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.facility-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 6px 8px 6px 12px;
+  color: var(--pink-dark);
+  font-size: 13px;
+  font-weight: 800;
+  background: #fff;
+  border: 1px solid #f2bdd3;
+  border-radius: 8px;
+}
+
+.facility-switch select {
+  min-height: 32px;
+  padding: 5px 30px 5px 9px;
+  color: var(--text);
+  background: var(--blue-pale);
+  border: 1px solid #c8e8f7;
+  border-radius: 8px;
+}
+
+.content {
+  padding: 30px 34px 48px;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+
+.grid.two {
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.feeding-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-bottom: 18px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(234, 246, 255, 0.9), rgba(234, 246, 255, 0) 34%),
+    linear-gradient(135deg, #fff, #fff0f6);
+  overflow: hidden;
+}
+
+.feeding-copy {
+  max-width: 560px;
+}
+
+.feeding-copy h3 {
+  margin: 10px 0 8px;
+  font-size: 22px;
+}
+
+.feeding-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.feeding-visual {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 12px;
+  min-width: 260px;
+}
+
+.feeding-visual .dog-mascot {
+  width: 86px;
+  height: 86px;
+  animation: dog-bob 1.8s ease-in-out infinite;
+}
+
+.food-bowl {
+  position: relative;
+  width: 148px;
+  height: 86px;
+  border: 3px solid #d9a7bd;
+  border-radius: 20px 20px 48px 48px;
+  background: linear-gradient(#fff 0%, #fff 45%, #f8f1ea 46%, #f3dfcb 100%);
+  box-shadow: inset 0 -14px 0 rgba(182, 93, 129, 0.08), 0 14px 24px rgba(92, 68, 52, 0.12);
+  overflow: hidden;
+}
+
+.food-bowl::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 16px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 3;
+}
+
+.kibble-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--fill);
+  background:
+    radial-gradient(circle at 18% 25%, #b97845 0 5px, transparent 6px),
+    radial-gradient(circle at 48% 40%, #d1945b 0 5px, transparent 6px),
+    radial-gradient(circle at 72% 28%, #a9673d 0 5px, transparent 6px),
+    linear-gradient(180deg, #e6ad72, #c9824e);
+  transition: height 0.6s ease;
+}
+
+.kibble-dots span {
+  position: absolute;
+  bottom: calc(var(--fill) - 5px);
+  width: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: #b97845;
+  z-index: 2;
+}
+
+.kibble-dots span:nth-child(1) { left: 24px; transform: rotate(12deg); }
+.kibble-dots span:nth-child(2) { left: 48px; bottom: calc(var(--fill) + 8px); }
+.kibble-dots span:nth-child(3) { left: 76px; transform: rotate(-12deg); }
+.kibble-dots span:nth-child(4) { left: 104px; bottom: calc(var(--fill) + 4px); }
+.kibble-dots span:nth-child(5) { left: 122px; transform: rotate(18deg); }
+
+.food-bowl strong {
+  position: absolute;
+  inset: auto 0 12px;
+  z-index: 4;
+  color: #7d4f38;
+  text-align: center;
+  font-size: 22px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+@keyframes dog-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.card.pad {
+  padding: 20px;
+}
+
+.section-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.section-title h3,
+.metric strong {
+  margin: 0;
+}
+
+.section-title h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+.section-title h3::before {
+  content: "🐾";
+  font-size: 17px;
+}
+
+.section-title p,
+.metric p,
+.help,
+.note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.metric {
+  min-height: 126px;
+  padding: 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(234, 246, 255, 0.62));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric::after {
+  content: "🐾";
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  color: rgba(182, 93, 129, 0.2);
+  font-size: 28px;
+  transform: rotate(-12deg);
+}
+
+.metric strong {
+  display: block;
+  font-size: 30px;
+  color: var(--pink-dark);
+}
+
+.metric.warning strong {
+  color: var(--red);
+}
+
+.primary-button,
+.sub-button,
+.ghost-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.primary-button {
+  color: #fff;
+  background: linear-gradient(135deg, var(--pink-dark), var(--blue));
+  box-shadow: 0 10px 20px rgba(93, 148, 184, 0.18);
+}
+
+.sub-button {
+  color: var(--blue);
+  background: var(--blue-pale);
+  border-color: #c8e8f7;
+}
+
+.primary-button:hover,
+.sub-button:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 14px 24px rgba(182, 93, 129, 0.16);
+}
+
+.ghost-button {
+  color: var(--text);
+  background: #fff;
+  border-color: var(--line);
+}
+
+.status-pill,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--blue-pale);
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.tag::before {
+  content: "•";
+  margin-right: 5px;
+  color: currentColor;
+  opacity: 0.55;
+}
+
+.tag.beige {
+  background: var(--beige);
+  color: #8a6d49;
+}
+
+.tag.red {
+  background: var(--pink-pale);
+  color: var(--red);
+}
+
+.tag.blue {
+  background: var(--blue-pale);
+  color: var(--blue);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  color: var(--muted);
+  font-size: 12px;
+  background: #fff0f6;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.table-wrap table {
+  min-width: 920px;
+}
+
+.shift-actions,
+.shift-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.shift-legend {
+  justify-content: flex-start;
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.shift-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend {
+  display: inline-block;
+  width: 18px;
+  height: 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.legend.early {
+  background: #dff6ee;
+}
+
+.legend.day {
+  background: #fffdf7;
+}
+
+.legend.late {
+  background: #eaf6ff;
+}
+
+.legend.hope {
+  background: #ffe0eb;
+}
+
+.legend.paid {
+  background: #f6eadc;
+}
+
+.legend.unset {
+  background: #f4efe6;
+}
+
+.monthly-shift-wrap {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.monthly-shift-table {
+  width: max-content;
+  min-width: 1320px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+}
+
+.monthly-shift-table th,
+.monthly-shift-table td {
+  min-width: 58px;
+  height: 54px;
+  padding: 5px;
+  text-align: center;
+  vertical-align: middle;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.monthly-shift-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  min-width: 44px;
+  height: 34px;
+  color: var(--text);
+  background: #fffdf8;
+}
+
+.monthly-shift-table thead tr:nth-child(2) th {
+  top: 34px;
+  color: var(--muted);
+  background: #fffdf7;
+}
+
+.monthly-shift-table .staff-head,
+.monthly-shift-table .staff-name {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  min-width: 148px;
+  text-align: left;
+  background: #fffdf8;
+}
+
+.monthly-shift-table .staff-name {
+  z-index: 2;
+}
+
+.monthly-shift-table .staff-name span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.monthly-shift-table .summary-head,
+.monthly-shift-table .summary-cell {
+  position: sticky;
+  right: 0;
+  z-index: 3;
+  min-width: 64px;
+  font-weight: 800;
+  background: #fffdf7;
+}
+
+.monthly-shift-table .summary-cell {
+  z-index: 1;
+}
+
+.monthly-shift-table tfoot th,
+.monthly-shift-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  height: 38px;
+  font-weight: 800;
+  background: #f7fbf8;
+}
+
+.monthly-shift-table tfoot .staff-name {
+  z-index: 5;
+}
+
+.weekend-col {
+  background: #f9eadf !important;
+}
+
+.shift-cell {
+  position: relative;
+}
+
+.shift-select.compact {
+  min-width: 48px;
+  min-height: 30px;
+  padding: 4px 3px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.shift-early .shift-select {
+  background: #dff6ee;
+}
+
+.shift-day .shift-select {
+  background: #fffdf7;
+}
+
+.shift-late .shift-select {
+  background: #eaf6ff;
+}
+
+.shift-off .shift-select {
+  background: #f7f4ef;
+  color: #8d8179;
+}
+
+.shift-hope .shift-select {
+  background: #ffe0eb;
+  color: var(--red);
+}
+
+.shift-paid .shift-select {
+  background: #f6eadc;
+  color: #8a6d49;
+}
+
+.shift-unset .shift-select {
+  background: #f4efe6;
+  color: #8a6d49;
+}
+
+.request-mini {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.request-mini.hope {
+  color: var(--red);
+  background: #f4f8ef;
+}
+
+.request-mini.unavailable {
+  color: #8a6d49;
+  background: #f6eadc;
+}
+
+.request-mini.only {
+  color: var(--blue);
+  background: var(--blue-pale);
+}
+
+.shortage-cell {
+  color: var(--red);
+  background: #fff0f6 !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.check-row,
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.check-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(118px, 1fr));
+  gap: 10px;
+}
+
+.day-card {
+  display: grid;
+  gap: 8px;
+  min-height: 142px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.day-card.weekend {
+  background: #fff0f6;
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.day-card select,
+.day-card input,
+.shift-select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.request-list {
+  display: grid;
+  gap: 10px;
+}
+
+.request-day {
+  display: grid;
+  grid-template-columns: 110px 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.request-day-wide {
+  grid-template-columns: 110px repeat(4, minmax(150px, 1fr));
+}
+
+.request-day strong {
+  color: var(--pink-dark);
+}
+
+.dog-mascot {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 auto;
+}
+
+.dog-small {
+  width: 46px;
+  height: 46px;
+  transform: none;
+  transform-origin: left center;
+}
+
+.dog-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border: 0;
+  border-radius: 0;
+  filter: drop-shadow(0 10px 16px rgba(93, 68, 52, 0.18));
+  background: transparent;
+}
+
+.dog-mascot::after {
+  content: "🐾";
+  position: absolute;
+  right: -9px;
+  bottom: -6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff0f6;
+  border: 2px solid #fff;
+  font-size: 13px;
+  box-shadow: 0 6px 14px rgba(182, 93, 129, 0.18);
+}
+
+.dog-face {
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  width: 42px;
+  height: 36px;
+  border: 2px solid #d8b596;
+  border-radius: 45% 45% 48% 48%;
+  background: #fff8ef;
+  box-shadow: inset -7px -6px 0 rgba(246, 234, 220, 0.75);
+}
+
+.dog-ear {
+  position: absolute;
+  top: 5px;
+  width: 18px;
+  height: 25px;
+  border-radius: 14px 14px 18px 18px;
+  background: #e7bfa4;
+  z-index: 0;
+}
+
+.dog-ear-left {
+  left: 4px;
+  transform: rotate(-26deg);
+}
+
+.dog-ear-right {
+  right: 4px;
+  transform: rotate(26deg);
+}
+
+.dog-eye,
+.dog-nose,
+.dog-smile,
+.dog-tail {
+  position: absolute;
+  display: block;
+}
+
+.dog-eye {
+  top: 14px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #564138;
+}
+
+.dog-eye-left {
+  left: 13px;
+}
+
+.dog-eye-right {
+  right: 13px;
+}
+
+.dog-nose {
+  left: 18px;
+  top: 20px;
+  width: 7px;
+  height: 5px;
+  border-radius: 60% 60% 70% 70%;
+  background: #564138;
+}
+
+.dog-smile {
+  left: 17px;
+  top: 24px;
+  width: 10px;
+  height: 6px;
+  border-bottom: 2px solid #564138;
+  border-radius: 0 0 12px 12px;
+}
+
+.dog-tail {
+  right: 0;
+  top: 25px;
+  width: 18px;
+  height: 10px;
+  border-top: 4px solid #e7bfa4;
+  border-radius: 999px 999px 0 0;
+  transform-origin: left center;
+}
+
+.topbar:hover .header-dog .dog-photo,
+.mascot-card:hover .dog-photo,
+.dog-bubble:hover .dog-photo,
+.loading-dog .dog-photo {
+  animation: dog-wiggle 0.9s ease-in-out infinite;
+}
+
+.header-dog {
+  transform: translateY(2px);
+}
+
+.mascot-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 240, 246, 0.88), rgba(234, 246, 255, 0.88)),
+    #fff;
+}
+
+.mascot-card .dog-mascot {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  transform: scale(1.25);
+}
+
+.mascot-card .section-title {
+  padding-right: 92px;
+}
+
+.empty-dog {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #fff;
+  border: 1px dashed #f2bdd3;
+  border-radius: 16px;
+}
+
+.dog-bubble {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  color: var(--text);
+  background: linear-gradient(135deg, #fff, var(--blue-pale));
+  border: 1px solid #c8e8f7;
+  border-radius: 18px;
+}
+
+.dog-bubble p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.dog-bubble.caution {
+  background: linear-gradient(135deg, #fff, #fff0f6);
+  border-color: #f2bdd3;
+}
+
+.dog-bubble.happy {
+  background: linear-gradient(135deg, #fff, #e9f8f6);
+  border-color: #cfe5db;
+}
+
+.request-submit-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.toast {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 360px;
+  padding: 14px 18px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid #f2bdd3;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(101, 75, 92, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px) scale(0.98);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast::before {
+  content: "🐶";
+  font-size: 24px;
+}
+
+.paw-pop {
+  position: fixed;
+  z-index: 30;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: paw-pop 0.62s ease-out forwards;
+}
+
+.paw-pop::before {
+  content: "🐾";
+  font-size: 28px;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 248, 251, 0.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loading-card {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-width: 230px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.loading-card p {
+  margin: 0;
+  color: var(--pink-dark);
+  font-weight: 800;
+}
+
+.paw-loader {
+  display: flex;
+  gap: 7px;
+}
+
+.paw-loader span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--pink);
+  animation: paw-step 0.8s ease-in-out infinite;
+}
+
+.paw-loader span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.paw-loader span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(-14deg); }
+  50% { transform: rotate(18deg); }
+}
+
+@keyframes dog-wiggle {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-2px); }
+}
+
+@keyframes paw-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4) rotate(-16deg); }
+  35% { opacity: 1; transform: translate(-50%, -80%) scale(1.08) rotate(8deg); }
+  100% { opacity: 0; transform: translate(-50%, -130%) scale(0.8) rotate(18deg); }
+}
+
+@keyframes paw-step {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-5px); }
+}
+
+.alert-list {
+  display: grid;
+  gap: 12px;
+}
+
+.alert-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--yellow);
+  border-radius: 8px;
+}
+
+.alert-item.danger {
+  border-left-color: var(--red);
+}
+
+.alert-item.info {
+  border-left-color: var(--blue);
+}
+
+.alert-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.readme {
+  line-height: 1.8;
+}
+
+.readme h3 {
+  margin: 24px 0 8px;
+}
+
+.readme ul {
+  margin-top: 8px;
+}
+
+@media (max-width: 1080px) {
+  .grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid.two,
+  .grid.three {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .content {
+    padding: 22px 18px 36px;
+  }
+
+  .grid.four,
+  .form-grid,
+  .calendar,
+  .request-day {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="メインメニュー">
+        <div class="brand">
+          <div class="brand-mark">H</div>
+          <div>
+            <p class="brand-label">ハグテラス</p>
+            <h1>シフト管理</h1>
+          </div>
+        </div>
+        <nav class="nav" id="nav"></nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-title">
+            <div>
+              <p class="eyebrow">2026年6月 プロトタイプ</p>
+              <h2 id="page-title">ダッシュボード</h2>
+            </div>
+            <div class="dog-mascot header-dog" aria-hidden="true">
+              <img class="dog-photo" src="data:image/png;base64,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" alt="" />
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <label class="facility-switch" for="facilitySelect">
+              <span>園を選択</span>
+              <select id="facilitySelect" aria-label="園を選択">
+                <option value="jinsho">神照園</option>
+                <option value="nagahama">長浜園</option>
+              </select>
+            </label>
+            <span class="status-pill">提出率 80%</span>
+            <button class="primary-button" data-jump="shift">シフト作成へ</button>
+          </div>
+        </header>
+
+        <section id="app" class="content" aria-live="polite"></section>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+      <div class="loading-card">
+        <div class="dog-mascot loading-dog" aria-hidden="true">
+          <img class="dog-photo" src="data:image/png;base64,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" alt="" />
+        </div>
+        <p>肉球で集計中...</p>
+        <div class="paw-loader"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <script>
+const staff = [
+  {
+    id: "tanaka",
+    name: "田中さん",
+    role: "保育士",
+    employment: "常勤",
+    days: ["月", "火", "水", "木", "金"],
+    unavailable: ["日"],
+    early: true,
+    late: true,
+    saturday: false,
+    weekly: 5,
+    fixedOff: "日曜",
+    memo: "クラス担任。早番・遅番ともに対応可能。"
+  },
+  {
+    id: "sato",
+    name: "佐藤さん",
+    role: "保育士",
+    employment: "パート",
+    days: ["月", "水", "金"],
+    unavailable: ["火", "木", "土", "日"],
+    early: false,
+    late: false,
+    saturday: false,
+    weekly: 3,
+    fixedOff: "火・木・土・日",
+    memo: "9:00-16:00希望。家庭都合で曜日固定。"
+  },
+  {
+    id: "suzuki",
+    name: "鈴木さん",
+    role: "看護師",
+    employment: "パート",
+    days: ["火", "木"],
+    unavailable: ["月", "水", "金", "土", "日"],
+    early: false,
+    late: false,
+    saturday: false,
+    weekly: 2,
+    fixedOff: "月・水・金・土・日",
+    memo: "医療的ケア確認のため火木を中心に配置。"
+  },
+  {
+    id: "yamamoto",
+    name: "山本さん",
+    role: "子育て支援員",
+    employment: "パート",
+    days: ["月", "火", "木", "土"],
+    unavailable: ["水", "日"],
+    early: true,
+    late: false,
+    saturday: true,
+    weekly: 4,
+    fixedOff: "水・日",
+    memo: "土曜勤務可。午前から夕方前までが希望。"
+  },
+  {
+    id: "takahashi",
+    name: "高橋さん",
+    role: "補助スタッフ",
+    employment: "パート",
+    days: ["月", "火", "水", "木", "金"],
+    unavailable: ["土", "日"],
+    early: true,
+    late: false,
+    saturday: false,
+    weekly: 4,
+    fixedOff: "土・日",
+    memo: "午前のみ可。制作物や清掃補助も対応。"
+  }
+];
+
+const menuItems = [
+  ["dashboard", "ダッシュボード"],
+  ["staff", "スタッフ一覧"],
+  ["detail", "スタッフ詳細・働き方登録"],
+  ["request", "希望提出"],
+  ["requests", "みんなの希望一覧"],
+  ["shift", "シフト作成表"],
+  ["check", "チェック結果"],
+  ["readme", "README"]
+];
+
+const days = [
+  { date: "6/1", dayNumber: 1, weekday: "月" },
+  { date: "6/2", dayNumber: 2, weekday: "火" },
+  { date: "6/3", dayNumber: 3, weekday: "水" },
+  { date: "6/4", dayNumber: 4, weekday: "木" },
+  { date: "6/5", dayNumber: 5, weekday: "金" },
+  { date: "6/6", dayNumber: 6, weekday: "土" },
+  { date: "6/7", dayNumber: 7, weekday: "日" },
+  { date: "6/8", dayNumber: 8, weekday: "月" },
+  { date: "6/9", dayNumber: 9, weekday: "火" },
+  { date: "6/10", dayNumber: 10, weekday: "水" },
+  { date: "6/11", dayNumber: 11, weekday: "木" },
+  { date: "6/12", dayNumber: 12, weekday: "金" },
+  { date: "6/13", dayNumber: 13, weekday: "土" },
+  { date: "6/14", dayNumber: 14, weekday: "日" },
+  { date: "6/15", dayNumber: 15, weekday: "月" },
+  { date: "6/16", dayNumber: 16, weekday: "火" },
+  { date: "6/17", dayNumber: 17, weekday: "水" },
+  { date: "6/18", dayNumber: 18, weekday: "木" },
+  { date: "6/19", dayNumber: 19, weekday: "金" },
+  { date: "6/20", dayNumber: 20, weekday: "土" },
+  { date: "6/21", dayNumber: 21, weekday: "日" },
+  { date: "6/22", dayNumber: 22, weekday: "月" },
+  { date: "6/23", dayNumber: 23, weekday: "火" },
+  { date: "6/24", dayNumber: 24, weekday: "水" },
+  { date: "6/25", dayNumber: 25, weekday: "木" },
+  { date: "6/26", dayNumber: 26, weekday: "金" },
+  { date: "6/27", dayNumber: 27, weekday: "土" },
+  { date: "6/28", dayNumber: 28, weekday: "日" },
+  { date: "6/29", dayNumber: 29, weekday: "月" },
+  { date: "6/30", dayNumber: 30, weekday: "火" }
+];
+
+const targetMonth = "2026年6月";
+
+const sheetRequestRows = {
+  jinsho: [
+    { submittedAt: "2026/05/12 08:30", staffName: "田中さん", month: targetMonth, date: "6/3", request: "希望休", memo: "家庭都合" },
+    { submittedAt: "2026/05/12 08:30", staffName: "田中さん", month: targetMonth, date: "6/6", request: "勤務不可", memo: "土曜不可" },
+    { submittedAt: "2026/05/12 08:30", staffName: "田中さん", month: targetMonth, date: "6/10", request: "遅番のみ可", memo: "" },
+    { submittedAt: "2026/05/12 09:10", staffName: "佐藤さん", month: targetMonth, date: "6/2", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 09:10", staffName: "佐藤さん", month: targetMonth, date: "6/4", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 09:10", staffName: "佐藤さん", month: targetMonth, date: "6/6", request: "希望休", memo: "家族予定" },
+    { submittedAt: "2026/05/12 09:10", staffName: "佐藤さん", month: targetMonth, date: "6/9", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 09:10", staffName: "佐藤さん", month: targetMonth, date: "6/11", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:05", staffName: "鈴木さん", month: targetMonth, date: "6/3", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:05", staffName: "鈴木さん", month: targetMonth, date: "6/6", request: "有休希望", memo: "" },
+    { submittedAt: "2026/05/12 10:05", staffName: "鈴木さん", month: targetMonth, date: "6/10", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:05", staffName: "鈴木さん", month: targetMonth, date: "6/13", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 11:20", staffName: "山本さん", month: targetMonth, date: "6/5", request: "希望休", memo: "" },
+    { submittedAt: "2026/05/12 11:20", staffName: "山本さん", month: targetMonth, date: "6/10", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 11:20", staffName: "山本さん", month: targetMonth, date: "6/13", request: "勤務可能", memo: "土曜可" },
+    { submittedAt: "2026/05/12 11:20", staffName: "山本さん", month: targetMonth, date: "6/20", request: "午前のみ可", memo: "" }
+  ],
+  nagahama: [
+    { submittedAt: "2026/05/12 08:45", staffName: "小林さん", month: targetMonth, date: "6/4", request: "希望休", memo: "" },
+    { submittedAt: "2026/05/12 08:45", staffName: "小林さん", month: targetMonth, date: "6/11", request: "遅番のみ可", memo: "" },
+    { submittedAt: "2026/05/12 09:00", staffName: "伊藤さん", month: targetMonth, date: "6/3", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 09:00", staffName: "伊藤さん", month: targetMonth, date: "6/6", request: "希望休", memo: "" },
+    { submittedAt: "2026/05/12 09:00", staffName: "伊藤さん", month: targetMonth, date: "6/10", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 09:00", staffName: "伊藤さん", month: targetMonth, date: "6/12", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:15", staffName: "渡辺さん", month: targetMonth, date: "6/2", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:15", staffName: "渡辺さん", month: targetMonth, date: "6/4", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:15", staffName: "渡辺さん", month: targetMonth, date: "6/6", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:15", staffName: "渡辺さん", month: targetMonth, date: "6/11", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 10:15", staffName: "渡辺さん", month: targetMonth, date: "6/13", request: "有休希望", memo: "" },
+    { submittedAt: "2026/05/12 11:10", staffName: "中村さん", month: targetMonth, date: "6/1", request: "勤務不可", memo: "" },
+    { submittedAt: "2026/05/12 11:10", staffName: "中村さん", month: targetMonth, date: "6/5", request: "希望休", memo: "" },
+    { submittedAt: "2026/05/12 11:10", staffName: "中村さん", month: targetMonth, date: "6/13", request: "勤務可能", memo: "土曜可" }
+  ]
+};
+
+const requests = buildRequestsFromSheetRows(staff, sheetRequestRows.jinsho);
+
+const nagahamaStaff = [
+  {
+    id: "nagahama-kobayashi",
+    name: "小林さん",
+    role: "保育士",
+    employment: "常勤",
+    days: ["月", "火", "水", "木", "金"],
+    unavailable: ["日"],
+    early: true,
+    late: true,
+    saturday: true,
+    weekly: 5,
+    fixedOff: "日曜",
+    memo: "長浜園のリーダー想定。土曜も月1回程度対応可能。"
+  },
+  {
+    id: "nagahama-ito",
+    name: "伊藤さん",
+    role: "保育士",
+    employment: "パート",
+    days: ["月", "火", "木"],
+    unavailable: ["水", "金", "土", "日"],
+    early: false,
+    late: false,
+    saturday: false,
+    weekly: 3,
+    fixedOff: "水・金・土・日",
+    memo: "9:00-15:00希望。制作補助も対応。"
+  },
+  {
+    id: "nagahama-watanabe",
+    name: "渡辺さん",
+    role: "看護師",
+    employment: "パート",
+    days: ["月", "水", "金"],
+    unavailable: ["火", "木", "土", "日"],
+    early: false,
+    late: false,
+    saturday: false,
+    weekly: 3,
+    fixedOff: "火・木・土・日",
+    memo: "体調確認と保健記録の確認を担当。"
+  },
+  {
+    id: "nagahama-nakamura",
+    name: "中村さん",
+    role: "子育て支援員",
+    employment: "パート",
+    days: ["火", "水", "金", "土"],
+    unavailable: ["月", "木", "日"],
+    early: true,
+    late: false,
+    saturday: true,
+    weekly: 4,
+    fixedOff: "月・木・日",
+    memo: "土曜勤務可。午前から昼過ぎまでが希望。"
+  },
+  {
+    id: "nagahama-kato",
+    name: "加藤さん",
+    role: "補助スタッフ",
+    employment: "パート",
+    days: ["月", "水", "木", "金"],
+    unavailable: ["火", "土", "日"],
+    early: true,
+    late: false,
+    saturday: false,
+    weekly: 4,
+    fixedOff: "火・土・日",
+    memo: "午前のみ可。環境整備や受け入れ補助を担当。"
+  }
+];
+
+const nagahamaRequests = buildRequestsFromSheetRows(nagahamaStaff, sheetRequestRows.nagahama);
+
+const shiftTypes = ["早番", "日勤", "遅番", "休み", "希望休", "有休", "未設定"];
+const shifts = {
+  "6/1": { tanaka: "早番", sato: "日勤", suzuki: "休み", yamamoto: "日勤", takahashi: "早番" },
+  "6/2": { tanaka: "日勤", sato: "休み", suzuki: "日勤", yamamoto: "早番", takahashi: "早番" },
+  "6/3": { tanaka: "日勤", sato: "日勤", suzuki: "休み", yamamoto: "休み", takahashi: "早番" },
+  "6/4": { tanaka: "遅番", sato: "休み", suzuki: "日勤", yamamoto: "日勤", takahashi: "早番" },
+  "6/5": { tanaka: "早番", sato: "日勤", suzuki: "休み", yamamoto: "日勤", takahashi: "日勤" },
+  "6/6": { tanaka: "休み", sato: "休み", suzuki: "休み", yamamoto: "日勤", takahashi: "休み" },
+  "6/8": { tanaka: "早番", sato: "日勤", suzuki: "休み", yamamoto: "日勤", takahashi: "早番" },
+  "6/9": { tanaka: "日勤", sato: "休み", suzuki: "日勤", yamamoto: "早番", takahashi: "日勤" },
+  "6/10": { tanaka: "遅番", sato: "日勤", suzuki: "休み", yamamoto: "休み", takahashi: "早番" },
+  "6/11": { tanaka: "早番", sato: "休み", suzuki: "日勤", yamamoto: "日勤", takahashi: "日勤" },
+  "6/12": { tanaka: "遅番", sato: "日勤", suzuki: "休み", yamamoto: "日勤", takahashi: "休み" },
+  "6/13": { tanaka: "休み", sato: "休み", suzuki: "休み", yamamoto: "日勤", takahashi: "休み" }
+};
+
+const nagahamaShifts = {
+  "6/1": { "nagahama-kobayashi": "早番", "nagahama-ito": "日勤", "nagahama-watanabe": "日勤", "nagahama-nakamura": "休み", "nagahama-kato": "早番" },
+  "6/2": { "nagahama-kobayashi": "日勤", "nagahama-ito": "日勤", "nagahama-watanabe": "休み", "nagahama-nakamura": "早番", "nagahama-kato": "休み" },
+  "6/3": { "nagahama-kobayashi": "早番", "nagahama-ito": "休み", "nagahama-watanabe": "日勤", "nagahama-nakamura": "日勤", "nagahama-kato": "早番" },
+  "6/4": { "nagahama-kobayashi": "日勤", "nagahama-ito": "日勤", "nagahama-watanabe": "休み", "nagahama-nakamura": "休み", "nagahama-kato": "日勤" },
+  "6/5": { "nagahama-kobayashi": "遅番", "nagahama-ito": "休み", "nagahama-watanabe": "日勤", "nagahama-nakamura": "日勤", "nagahama-kato": "日勤" },
+  "6/6": { "nagahama-kobayashi": "日勤", "nagahama-ito": "休み", "nagahama-watanabe": "休み", "nagahama-nakamura": "日勤", "nagahama-kato": "休み" },
+  "6/8": { "nagahama-kobayashi": "早番", "nagahama-ito": "日勤", "nagahama-watanabe": "日勤", "nagahama-nakamura": "休み", "nagahama-kato": "早番" },
+  "6/9": { "nagahama-kobayashi": "日勤", "nagahama-ito": "日勤", "nagahama-watanabe": "休み", "nagahama-nakamura": "早番", "nagahama-kato": "休み" },
+  "6/10": { "nagahama-kobayashi": "早番", "nagahama-ito": "休み", "nagahama-watanabe": "日勤", "nagahama-nakamura": "日勤", "nagahama-kato": "休み" },
+  "6/11": { "nagahama-kobayashi": "遅番", "nagahama-ito": "日勤", "nagahama-watanabe": "休み", "nagahama-nakamura": "休み", "nagahama-kato": "日勤" },
+  "6/12": { "nagahama-kobayashi": "早番", "nagahama-ito": "休み", "nagahama-watanabe": "日勤", "nagahama-nakamura": "日勤", "nagahama-kato": "日勤" },
+  "6/13": { "nagahama-kobayashi": "日勤", "nagahama-ito": "休み", "nagahama-watanabe": "休み", "nagahama-nakamura": "日勤", "nagahama-kato": "休み" }
+};
+
+const facilities = {
+  jinsho: {
+    name: "神照園",
+    staff,
+    requests,
+    sheetRows: sheetRequestRows.jinsho,
+    shifts,
+    note: "土曜の希望休が重なりやすいため、土曜勤務可のスタッフ確認がポイントです。"
+  },
+  nagahama: {
+    name: "長浜園",
+    staff: nagahamaStaff,
+    requests: nagahamaRequests,
+    sheetRows: sheetRequestRows.nagahama,
+    shifts: nagahamaShifts,
+    note: "看護師配置が月水金中心のため、火木の体調確認体制を事前に確認します。"
+  }
+};
+
+const state = {
+  facility: "jinsho",
+  page: "dashboard",
+  selectedStaff: "tanaka",
+  requestStaff: "sato"
+};
+
+const app = document.querySelector("#app");
+const nav = document.querySelector("#nav");
+const pageTitle = document.querySelector("#page-title");
+const facilitySelect = document.querySelector("#facilitySelect");
+const toast = document.querySelector("#toast");
+const loadingOverlay = document.querySelector("#loadingOverlay");
+
+function init() {
+  nav.innerHTML = menuItems
+    .map(([id, label]) => `<button type="button" data-page="${id}">${label}</button>`)
+    .join("");
+
+  nav.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-page]");
+    if (!button) return;
+    state.page = button.dataset.page;
+    render();
+  });
+
+  document.body.addEventListener("click", (event) => {
+    const jump = event.target.closest("[data-jump]");
+    const action = event.target.closest("[data-action]");
+    if (event.target.closest("button")) {
+      showPawStamp(event);
+    }
+    if (action?.dataset.action === "autoShift") {
+      showLoading(true);
+      window.setTimeout(() => {
+        autoCreateShift();
+        state.page = "shift";
+        render();
+        showLoading(false);
+        showToast("シフトを作成しました！気になるところは手動で整えられます。");
+      }, 520);
+      return;
+    }
+
+    if (action?.dataset.action === "requestSubmit") {
+      syncCurrentRequestToSheetRows();
+      showToast("送信できました！休み希望を預かりました。");
+      render();
+      return;
+    }
+
+    if (!jump) return;
+    state.page = jump.dataset.jump;
+    render();
+  });
+
+  app.addEventListener("change", handleChange);
+  facilitySelect.addEventListener("change", (event) => {
+    state.facility = event.target.value;
+    resetStaffSelection();
+    render();
+  });
+  render();
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2800);
+}
+
+function showLoading(visible) {
+  loadingOverlay.classList.toggle("show", visible);
+  loadingOverlay.setAttribute("aria-hidden", String(!visible));
+}
+
+function showPawStamp(event) {
+  const stamp = document.createElement("span");
+  stamp.className = "paw-pop";
+  stamp.style.left = `${event.clientX}px`;
+  stamp.style.top = `${event.clientY}px`;
+  document.body.appendChild(stamp);
+  window.setTimeout(() => stamp.remove(), 700);
+}
+
+function render() {
+  facilitySelect.value = state.facility;
+  const title = menuItems.find(([id]) => id === state.page)?.[1] || "ダッシュボード";
+  pageTitle.textContent = `${activeFacility().name} ${title}`;
+  document.querySelector(".status-pill").textContent = `提出率 ${Math.round((submittedStaffNames().length / activeStaff().length) * 100)}%`;
+  document.querySelectorAll(".nav button").forEach((button) => {
+    button.classList.toggle("active", button.dataset.page === state.page);
+  });
+
+  const screens = {
+    dashboard: renderDashboard,
+    staff: renderStaffList,
+    detail: renderStaffDetail,
+    request: renderRequestForm,
+    requests: renderRequestsOverview,
+    shift: renderShiftBuilder,
+    check: renderCheckResult,
+    readme: renderReadme
+  };
+
+  app.innerHTML = screens[state.page]();
+}
+
+function handleChange(event) {
+  const target = event.target;
+
+  if (target.id === "staffSelect") {
+    state.selectedStaff = target.value;
+    render();
+  }
+
+  if (target.id === "requestStaff") {
+    state.requestStaff = target.value;
+    render();
+  }
+
+  if (target.dataset.requestDate) {
+    activeRequests()[state.requestStaff][target.dataset.requestDate] = target.value;
+  }
+
+  if (target.dataset.shiftDate && target.dataset.staffId) {
+    activeShifts()[target.dataset.shiftDate][target.dataset.staffId] = target.value;
+  }
+}
+
+function activeFacility() {
+  return facilities[state.facility];
+}
+
+function activeStaff() {
+  return activeFacility().staff;
+}
+
+function activeRequests() {
+  return activeFacility().requests;
+}
+
+function activeShifts() {
+  return activeFacility().shifts;
+}
+
+function buildRequestsFromSheetRows(staffList, rows) {
+  const nameToId = Object.fromEntries(staffList.map((person) => [person.name, person.id]));
+  const result = Object.fromEntries(staffList.map((person) => [person.id, {}]));
+  rows.forEach((row) => {
+    const staffId = nameToId[row.staffName];
+    if (!staffId || row.month !== targetMonth) return;
+    result[staffId][row.date] = row.request || "未入力";
+  });
+  return result;
+}
+
+function submittedStaffNames(facility = activeFacility()) {
+  return [...new Set(facility.sheetRows.filter((row) => row.month === targetMonth).map((row) => row.staffName))];
+}
+
+function requestFor(person, day) {
+  const explicit = activeRequests()[person.id]?.[day.date];
+  if (explicit) return explicit;
+  return person.days.includes(day.weekday) ? "未入力" : "勤務不可";
+}
+
+function requestForFacility(facility, person, day) {
+  const explicit = facility.requests[person.id]?.[day.date];
+  if (explicit) return explicit;
+  return person.days.includes(day.weekday) ? "未入力" : "勤務不可";
+}
+
+function isWorkingShift(value) {
+  return ["早番", "日勤", "遅番"].includes(value);
+}
+
+function isWeekend(day) {
+  return day.weekday === "土" || day.weekday === "日";
+}
+
+function canWorkShiftType(person, day, type) {
+  const request = requestFor(person, day);
+  if (request === "早番のみ可") return type === "早番";
+  if (request === "遅番のみ可") return type === "遅番";
+  if (request === "午前のみ可") return type !== "遅番";
+  if (type === "早番") return person.early;
+  if (type === "遅番") return person.late;
+  return true;
+}
+
+function resetStaffSelection() {
+  const firstStaff = activeStaff()[0].id;
+  state.selectedStaff = firstStaff;
+  state.requestStaff = firstStaff;
+}
+
+function syncCurrentRequestToSheetRows() {
+  const facility = activeFacility();
+  const person = activeStaff().find((item) => item.id === state.requestStaff);
+  if (!person) return;
+
+  facility.sheetRows = facility.sheetRows.filter((row) => !(row.staffName === person.name && row.month === targetMonth));
+  days.forEach((day) => {
+    const request = facility.requests[person.id]?.[day.date] || "未入力";
+    if (request === "未入力") return;
+    facility.sheetRows.push({
+      submittedAt: new Date().toLocaleString("ja-JP"),
+      staffName: person.name,
+      month: targetMonth,
+      date: day.date,
+      request,
+      memo: sampleNote(person.id, day.date)
+    });
+  });
+}
+
+function normalizeShiftData() {
+  Object.values(facilities).forEach((facility) => {
+    days.forEach((day) => {
+      if (!facility.shifts[day.date]) {
+        facility.shifts[day.date] = {};
+      }
+      facility.staff.forEach((person) => {
+        if (!facility.shifts[day.date][person.id]) {
+          const request = facility.requests[person.id]?.[day.date];
+          facility.shifts[day.date][person.id] = request === "希望休" ? "希望休" : request === "有休希望" ? "有休" : "休み";
+        }
+      });
+    });
+  });
+}
+
+function autoCreateShift() {
+  const staffList = activeStaff();
+  const requestList = activeRequests();
+  const shiftList = activeShifts();
+  const workCounts = Object.fromEntries(staffList.map((person) => [person.id, 0]));
+  const saturdayCounts = Object.fromEntries(staffList.map((person) => [person.id, 0]));
+
+  days.forEach((day) => {
+    const requiredCount = day.weekday === "日" ? 0 : day.weekday === "土" ? 2 : 3;
+    shiftList[day.date] = {};
+
+    staffList.forEach((person) => {
+      const request = requestList[person.id]?.[day.date];
+      if (request === "希望休") {
+        shiftList[day.date][person.id] = "希望休";
+      } else if (request === "有休希望") {
+        shiftList[day.date][person.id] = "有休";
+      } else if (request === "勤務不可" || !person.days.includes(day.weekday)) {
+        shiftList[day.date][person.id] = "休み";
+      } else {
+        shiftList[day.date][person.id] = "未設定";
+      }
+    });
+
+    const candidates = staffList
+      .filter((person) => shiftList[day.date][person.id] === "未設定")
+      .sort((a, b) => {
+        const employmentDiff = (a.employment === "パート" ? -1 : 1) - (b.employment === "パート" ? -1 : 1);
+        if (employmentDiff !== 0) return employmentDiff;
+        const saturdayDiff = saturdayCounts[a.id] - saturdayCounts[b.id];
+        if (day.weekday === "土" && saturdayDiff !== 0) return saturdayDiff;
+        return workCounts[a.id] - workCounts[b.id];
+      });
+
+    const assigned = new Set();
+    const assign = (type, predicate = () => true) => {
+      const person = candidates.find((candidate) => !assigned.has(candidate.id) && canWorkShiftType(candidate, day, type) && predicate(candidate));
+      if (!person) return false;
+      shiftList[day.date][person.id] = type;
+      assigned.add(person.id);
+      workCounts[person.id] += 1;
+      if (day.weekday === "土") saturdayCounts[person.id] += 1;
+      return true;
+    };
+
+    if (requiredCount > 0) {
+      assign("早番", (person) => person.early);
+      assign("遅番", (person) => person.late);
+
+      const hasTeacher = staffList.some((person) => person.role === "保育士" && isWorkingShift(shiftList[day.date][person.id]));
+      if (!hasTeacher) {
+        assign("日勤", (person) => person.role === "保育士");
+      }
+
+      const hasNurse = staffList.some((person) => person.role === "看護師" && isWorkingShift(shiftList[day.date][person.id]));
+      if (!hasNurse) {
+        assign("日勤", (person) => person.role === "看護師");
+      }
+
+      while (assigned.size < requiredCount) {
+        const added = assign("日勤");
+        if (!added) break;
+      }
+    }
+  });
+}
+
+function renderDashboard() {
+  const facility = activeFacility();
+  const submittedNames = submittedStaffNames(facility);
+  const submissionRate = Math.round((submittedNames.length / facility.staff.length) * 100);
+  const unsubmitted = facility.staff.filter((person) => !submittedNames.includes(person.name));
+  const availableFewDay = days
+    .map((day) => ({
+      ...day,
+      availableCount: facility.staff.filter((person) => ["勤務可能", "早番のみ可", "遅番のみ可", "午前のみ可", "未入力"].includes(requestForFacility(facility, person, day))).length
+    }))
+    .filter((day) => minimumStaff(day) > 0)
+    .sort((a, b) => a.availableCount - b.availableCount)[0];
+  const nurseAvailableDays = days.filter((day) =>
+    facility.staff.some((person) => person.role === "看護師" && ["勤務可能", "早番のみ可", "遅番のみ可", "午前のみ可", "未入力"].includes(requestForFacility(facility, person, day)))
+  );
+  const shortageDays = days.filter((day) => {
+    const working = facility.staff.filter((person) => isWorkingShift(facility.shifts[day.date][person.id]));
+    return working.length < minimumStaff(day);
+  });
+  const busyOffDay = days
+    .map((day) => ({
+      ...day,
+      offCount: facility.staff.filter((person) => ["希望休", "有休希望"].includes(requestForFacility(facility, person, day))).length
+    }))
+    .sort((a, b) => b.offCount - a.offCount)[0];
+  return `
+    <section class="card pad feeding-card">
+      <div class="feeding-copy">
+        <span class="tag">提出率 ${submissionRate}%</span>
+        <h3>提出が増えると、ごはんも増えます</h3>
+        <p>スタッフの希望提出が進むほど、看板犬のごはんボウルが満たされます。未提出の声かけも、少し楽しく確認できます。</p>
+      </div>
+      <div class="feeding-visual" style="--fill:${submissionRate}%;">
+        ${dogMascotMarkup()}
+        <div class="food-bowl" aria-label="提出率 ${submissionRate}%">
+          <div class="kibble-fill"></div>
+          <div class="kibble-dots">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <strong>${submissionRate}%</strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid four">
+      <article class="metric">
+        <span class="tag">${targetMonth}</span>
+        <strong>${facility.staff.length}名</strong>
+        <p>登録スタッフ総数です。Googleフォーム提出データをもとに集計します。</p>
+      </article>
+      <article class="metric warning">
+        <span class="tag red">未提出スタッフ数</span>
+        <strong>${unsubmitted.length}名</strong>
+        <p>${unsubmitted.map((person) => person.name).join("、") || "全員提出済み"}。</p>
+      </article>
+      <article class="metric">
+        <span class="tag beige">希望休が多い日</span>
+        <strong>${busyOffDay.date}</strong>
+        <p>希望休・有休希望が${busyOffDay.offCount}名あります。</p>
+      </article>
+      <article class="metric warning">
+        <span class="tag red">勤務可能人数が少ない日</span>
+        <strong>${availableFewDay.date}</strong>
+        <p>勤務可能候補が${availableFewDay.availableCount}名です。</p>
+      </article>
+    </div>
+
+    <div class="grid two" style="margin-top:18px;">
+      <section class="card pad mascot-card">
+        <div class="section-title">
+          <div>
+            <h3>スプレッドシート連携イメージ</h3>
+            <p>Googleフォームから送信された休み希望を、Googleスプレッドシートの行データとして読み込む想定です。</p>
+          </div>
+          <button class="primary-button" data-action="autoShift">自動シフト作成</button>
+        </div>
+        ${dogMascotMarkup()}
+        <div class="alert-list">
+          <div class="alert-item danger">
+            <span class="alert-icon">!</span>
+            <div><strong>未提出スタッフ</strong><p class="note">${unsubmitted.map((person) => person.name).join("、") || "未提出者はいません。"}</p></div>
+            <span class="tag red">提出状況</span>
+          </div>
+          <div class="alert-item info">
+            <span class="alert-icon">i</span>
+            <div><strong>看護師が勤務可能な日</strong><p class="note">${nurseAvailableDays.map((day) => `${day.date}(${day.weekday})`).join("、") || "該当なし"}</p></div>
+            <span class="tag blue">看護師</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card pad">
+        <div class="section-title">
+          <div>
+            <h3>導線</h3>
+            <p>プロトタイプ確認時は、この順番で見せると伝わりやすいです。</p>
+          </div>
+        </div>
+        <div class="chip-row">
+          <button class="sub-button" data-jump="staff">1. スタッフ一覧</button>
+          <button class="sub-button" data-jump="request">2. 希望提出</button>
+          <button class="sub-button" data-jump="requests">3. 希望一覧</button>
+          <button class="sub-button" data-jump="shift">4. シフト作成</button>
+          <button class="sub-button" data-jump="check">5. チェック結果</button>
+        </div>
+        ${unsubmitted.length === 0 ? `
+          <div class="empty-dog" style="margin-top:16px;">
+            ${dogMascotMarkup("small")}
+            <p class="note"><strong>みんな提出済みです！</strong><br>このままシフト作成に進めます。</p>
+          </div>
+        ` : ""}
+      </section>
+    </div>
+  `;
+}
+
+function renderStaffList() {
+  const staffList = activeStaff();
+  return `
+    <section class="card">
+      <div class="section-title padless"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>氏名</th>
+              <th>職種</th>
+              <th>雇用形態</th>
+              <th>勤務可能曜日</th>
+              <th>早番</th>
+              <th>遅番</th>
+              <th>土曜</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${staffList.map((person) => `
+              <tr>
+                <td><strong>${person.name}</strong></td>
+                <td>${person.role}</td>
+                <td>${person.employment}</td>
+                <td>${person.days.join("・")}</td>
+                <td>${yesNo(person.early)}</td>
+                <td>${yesNo(person.late)}</td>
+                <td>${yesNo(person.saturday)}</td>
+                <td>${person.memo}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderStaffDetail() {
+  const staffList = activeStaff();
+  const person = staffList.find((item) => item.id === state.selectedStaff) || staffList[0];
+  return `
+    <section class="card pad">
+      <div class="section-title">
+        <div>
+          <h3>働き方条件の登録・確認</h3>
+          <p>実運用では保存機能をつける想定です。今は確認用として入力欄の形を見られます。</p>
+        </div>
+        <div class="field" style="min-width:240px;">
+          <label for="staffSelect">表示するスタッフ</label>
+          <select id="staffSelect">
+            ${staffList.map((item) => `<option value="${item.id}" ${item.id === person.id ? "selected" : ""}>${item.name}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        ${input("氏名", person.name)}
+        ${input("職種", person.role)}
+        ${input("雇用形態", person.employment)}
+        ${input("週の勤務希望日数", `週${person.weekly}日`)}
+        ${checkField("勤務可能曜日", person.days)}
+        ${checkField("勤務不可曜日", person.unavailable)}
+        ${selectField("早番可否", person.early ? "可" : "不可")}
+        ${selectField("遅番可否", person.late ? "可" : "不可")}
+        ${selectField("土曜勤務可否", person.saturday ? "可" : "不可")}
+        ${input("固定休", person.fixedOff)}
+        <div class="field full">
+          <label for="memo">家庭都合などの備考欄</label>
+          <textarea id="memo">${person.memo}</textarea>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderRequestForm() {
+  const staffList = activeStaff();
+  const requestList = activeRequests();
+  const person = staffList.find((item) => item.id === state.requestStaff) || staffList[0];
+  return `
+    <section class="card pad">
+      <div class="section-title">
+        <div>
+          <h3>勤務希望の提出</h3>
+          <p>${person.name}として、日ごとの勤務希望を選べます。備考欄は「午前のみ」「通院付き添い」などのメモ想定です。</p>
+        </div>
+        <div class="field" style="min-width:240px;">
+          <label for="requestStaff">提出するスタッフ</label>
+          <select id="requestStaff">
+            ${staffList.map((item) => `<option value="${item.id}" ${item.id === person.id ? "selected" : ""}>${item.name}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="calendar">
+        ${days.map((day) => {
+          const current = requestList[person.id][day.date] || (person.days.includes(day.weekday) ? "未入力" : "勤務不可");
+          return `
+            <article class="day-card ${day.weekday === "土" ? "weekend" : ""}">
+              <div class="day-head"><span>${day.date}(${day.weekday})</span>${day.weekday === "土" ? '<span class="tag beige">土曜</span>' : ""}</div>
+              <select data-request-date="${day.date}">
+                ${["勤務可能", "希望休", "有休希望", "勤務不可", "早番のみ可", "遅番のみ可", "午前のみ可", "未入力"].map((option) => `<option ${option === current ? "selected" : ""}>${option}</option>`).join("")}
+              </select>
+              <input type="text" placeholder="備考" value="${sampleNote(person.id, day.date)}" />
+            </article>
+          `;
+        }).join("")}
+      </div>
+      <div class="request-submit-panel">
+        <div class="dog-bubble">
+          ${dogMascotMarkup("small")}
+          <p>入力できたら送信ボタンを押してください。送信後は管理者画面の集計に反映される想定です。</p>
+        </div>
+        <button class="primary-button" data-action="requestSubmit">希望を送信する</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderRequestsOverview() {
+  const staffList = activeStaff();
+  const categories = ["勤務可能", "希望休", "有休希望", "勤務不可", "早番のみ可", "遅番のみ可", "午前のみ可", "未入力"];
+  return `
+    <section class="card pad">
+      <div class="section-title">
+        <div>
+          <h3>希望集計</h3>
+          <p>Googleスプレッドシートから取得した想定の休み希望を、日付ごとに分類して確認できます。</p>
+        </div>
+      </div>
+      <div class="request-list">
+        ${days.map((day) => {
+          return `
+            <article class="request-day request-day-wide">
+              <strong>${day.date}(${day.weekday})</strong>
+              ${categories.map((category) => {
+                const names = staffList.filter((person) => requestFor(person, day) === category).map((person) => person.name);
+                return `
+                  <div>
+                    <span class="tag ${["希望休", "有休希望", "勤務不可"].includes(category) ? "red" : category.includes("のみ") ? "beige" : ""}">${category}</span>
+                    <p class="note">${names.join("、") || "なし"}</p>
+                  </div>
+                `;
+              }).join("")}
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderShiftBuilder() {
+  const staffList = activeStaff();
+  const shiftList = activeShifts();
+  return `
+    <section class="card pad">
+      <div class="section-title">
+        <div>
+          <h3>月間シフト作成表</h3>
+          <p>休み希望・勤務不可をもとに自動作成し、必要なセルだけあとから手動で修正できます。</p>
+        </div>
+        <div class="shift-actions">
+          <button class="primary-button" data-action="autoShift">休み希望から自動作成</button>
+          <button class="sub-button" data-jump="check">チェック結果を見る</button>
+        </div>
+      </div>
+      <div class="shift-legend">
+        <span><b class="legend early"></b>早番</span>
+        <span><b class="legend day"></b>日勤</span>
+        <span><b class="legend late"></b>遅番</span>
+        <span><b class="legend hope"></b>希望休</span>
+        <span><b class="legend paid"></b>有休</span>
+        <span><b class="legend unset"></b>未設定</span>
+      </div>
+      <div class="monthly-shift-wrap">
+        <table class="monthly-shift-table">
+          <thead>
+            <tr>
+              <th class="staff-head" rowspan="2">スタッフ</th>
+              ${days.map((day) => `<th class="${isWeekend(day) ? "weekend-col" : ""}">${day.dayNumber}</th>`).join("")}
+              <th class="summary-head" rowspan="2">勤務数</th>
+            </tr>
+            <tr>
+              ${days.map((day) => `<th class="${isWeekend(day) ? "weekend-col" : ""}">${day.weekday}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${staffList.map((person) => `
+              <tr>
+                <th class="staff-name">
+                  <strong>${person.name}</strong>
+                  <span>${person.role}</span>
+                </th>
+                ${days.map((day) => {
+                  const value = shiftList[day.date][person.id];
+                  return `
+                  <td class="shift-cell ${shiftClass(value)} ${isWeekend(day) ? "weekend-col" : ""}">
+                    <select class="shift-select compact" title="${person.name} ${day.date}" data-shift-date="${day.date}" data-staff-id="${person.id}">
+                      ${shiftTypes.map((type) => `<option ${value === type ? "selected" : ""}>${type}</option>`).join("")}
+                    </select>
+                    ${requestMiniBadge(getRequest(person, day))}
+                  </td>
+                `;
+                }).join("")}
+                <td class="summary-cell">${days.filter((day) => isWorkingShift(shiftList[day.date][person.id])).length}日</td>
+              </tr>
+            `).join("")}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th class="staff-name">日別人数</th>
+              ${days.map((day) => {
+                const count = staffList.filter((person) => isWorkingShift(shiftList[day.date][person.id])).length;
+                return `<td class="${count < minimumStaff(day) ? "shortage-cell" : ""}">${count}</td>`;
+              }).join("")}
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderCheckResult() {
+  const alerts = buildAlerts();
+  const hasDanger = alerts.some((alert) => alert.level === "danger");
+  return `
+    <section class="card pad">
+      <div class="section-title">
+        <div>
+          <h3>チェック結果</h3>
+          <p>作成中のシフトから、確認したい注意点を自動で表示する想定の画面です。</p>
+        </div>
+        <button class="sub-button" data-jump="shift">シフト作成表に戻る</button>
+      </div>
+      <div class="dog-bubble ${hasDanger ? "caution" : "happy"}">
+        ${dogMascotMarkup("small")}
+        <p>${hasDanger ? "少し確認したいところがあります。下の注意点を順番に見ていきましょう。" : "大きな問題はなさそうです！この調子で確認できます。"}</p>
+      </div>
+      <div class="alert-list">
+        ${alerts.map((alert) => `
+          <article class="alert-item ${alert.level}">
+            <span class="alert-icon">${alert.icon}</span>
+            <div>
+              <strong>${alert.title}</strong>
+              <p class="note">${alert.body}</p>
+            </div>
+            <span class="tag ${alert.level === "danger" ? "red" : alert.level === "info" ? "blue" : "beige"}">${alert.label}</span>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderReadme() {
+  return `
+    <section class="card pad readme">
+      <h3>このアプリの目的</h3>
+      <p>Googleフォームから送信された休み希望を、Googleスプレッドシートに保存し、管理者用アプリで集計・自動シフト作成するための確認用プロトタイプです。</p>
+      <h3>画面一覧</h3>
+      <ul>
+        ${menuItems.filter(([id]) => id !== "readme").map(([, label]) => `<li>${label}</li>`).join("")}
+      </ul>
+      <h3>ローカルでの起動方法</h3>
+      <p>ターミナルでこのフォルダを開き、<code>npm run dev</code> を実行します。</p>
+      <h3>ブラウザで確認するURL</h3>
+      <p><code>http://localhost:3000</code></p>
+      <h3>低コスト運用の考え方</h3>
+      <p>まずは本格的なデータベースを使わず、Googleフォーム + Googleスプレッドシートをデータ保存先として想定しています。現時点では、スプレッドシートから取得した想定のサンプルデータで疑似連携しています。</p>
+      <h3>修正後の使い方</h3>
+      <ul>
+        <li>画面上部で神照園・長浜園を切り替えます。</li>
+        <li>希望提出で、スタッフごとの勤務可能・希望休・有休希望・勤務不可などを入力します。</li>
+        <li>みんなの希望一覧で、日付ごとの希望集計を確認します。</li>
+        <li>シフト作成表で「休み希望から自動作成」を押します。</li>
+        <li>月間一覧表の各セルで、早番・日勤・遅番・休み・希望休・有休・未設定を手動修正できます。</li>
+        <li>チェック結果で、人員不足や希望休との重なりを確認します。</li>
+      </ul>
+      <h3>本番運用する場合の選択肢</h3>
+      <ul>
+        <li>Googleフォーム + Googleスプレッドシート: 低コストで始めやすいが、権限管理には限界があります。</li>
+        <li>Google Apps Script: スプレッドシートからJSONやCSVを出しやすく、通知も追加しやすいです。</li>
+        <li>Supabase: ログインや権限管理を含む本格運用に向いています。</li>
+        <li>Firebase: リアルタイム更新や通知に強いですが、設計の整理が必要です。</li>
+      </ul>
+      <h3>今後追加するとよい機能</h3>
+      <ul>
+        <li>ログイン機能</li>
+        <li>スタッフごとのアカウント</li>
+        <li>希望提出の締切設定</li>
+        <li>自動シフト作成</li>
+        <li>LINE通知</li>
+        <li>CSV出力</li>
+        <li>Googleカレンダー連携</li>
+        <li>スマホ対応</li>
+        <li>データベース保存</li>
+      </ul>
+    </section>
+  `;
+}
+
+function buildAlerts() {
+  const alerts = [];
+  const facility = activeFacility();
+  const staffList = activeStaff();
+  const shiftList = activeShifts();
+
+  days.forEach((day) => {
+    const working = staffList.filter((person) => isWorkingShift(shiftList[day.date][person.id]));
+    const teachers = working.filter((person) => person.role === "保育士");
+    const nurses = working.filter((person) => person.role === "看護師");
+    const conflicts = working.filter((person) => getRequest(person, day) === "希望休");
+    const paidConflicts = working.filter((person) => getRequest(person, day) === "有休希望");
+    const unavailableConflicts = working.filter((person) => getRequest(person, day) === "勤務不可" || !person.days.includes(day.weekday));
+    const earlyConflicts = staffList.filter((person) => shiftList[day.date][person.id] === "早番" && (!person.early || ["遅番のみ可"].includes(getRequest(person, day))));
+    const lateConflicts = staffList.filter((person) => shiftList[day.date][person.id] === "遅番" && (!person.late || ["早番のみ可", "午前のみ可"].includes(getRequest(person, day))));
+    const dayConflicts = staffList.filter((person) => shiftList[day.date][person.id] === "日勤" && ["早番のみ可", "遅番のみ可"].includes(getRequest(person, day)));
+    const earlyCount = staffList.filter((person) => shiftList[day.date][person.id] === "早番").length;
+    const dayCount = staffList.filter((person) => shiftList[day.date][person.id] === "日勤").length;
+    const lateCount = staffList.filter((person) => shiftList[day.date][person.id] === "遅番").length;
+
+    if (working.length < minimumStaff(day)) {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${day.date}(${day.weekday}) は人員不足の可能性があります`,
+        body: `勤務配置が${working.length}名です。この日は最低${minimumStaff(day)}名を目安に確認してください。`,
+        label: "人員不足"
+      });
+    }
+
+    if (minimumStaff(day) > 0 && earlyCount < 1) {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${day.date}(${day.weekday}) は早番が足りません`,
+        body: "早番を1名以上配置できるか確認してください。",
+        label: "早番不足"
+      });
+    }
+
+    if (minimumStaff(day) > 0 && dayCount < 1) {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${day.date}(${day.weekday}) は日勤が足りません`,
+        body: "日中の中心になるスタッフを1名以上配置できるか確認してください。",
+        label: "日勤不足"
+      });
+    }
+
+    if (minimumStaff(day) > 0 && lateCount < 1) {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${day.date}(${day.weekday}) は遅番が足りません`,
+        body: "閉園時間帯まで対応できるスタッフを確認してください。",
+        label: "遅番不足"
+      });
+    }
+
+    if (teachers.length < 1) {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${day.date}(${day.weekday}) は保育士が不足しています`,
+        body: "保育士資格を持つスタッフの配置を追加できるか確認してください。",
+        label: "保育士"
+      });
+    }
+
+    if (nurses.length < 1 && minimumStaff(day) > 0) {
+      alerts.push({
+        level: "info",
+        icon: "i",
+        title: `${day.date}(${day.weekday}) は看護師が不在です`,
+        body: `医療的ケアや体調確認が必要な日は、${facility.name}の看護師配置を確認してください。`,
+        label: "看護師"
+      });
+    }
+
+    conflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}の希望休と勤務が重なっています`,
+        body: `${day.date}(${day.weekday}) に${shiftList[day.date][person.id]}で配置されています。`,
+        label: "希望休"
+      });
+    });
+
+    paidConflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}の有休希望日に勤務が入っています`,
+        body: `${day.date}(${day.weekday}) に${shiftList[day.date][person.id]}で配置されています。`,
+        label: "有休"
+      });
+    });
+
+    unavailableConflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}の勤務不可日に勤務が入っています`,
+        body: `${day.date}(${day.weekday}) に${shiftList[day.date][person.id]}で配置されています。`,
+        label: "勤務不可"
+      });
+    });
+
+    earlyConflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}は早番不可ですが早番に入っています`,
+        body: `${day.date}(${day.weekday}) の早番配置を見直してください。`,
+        label: "早番"
+      });
+    });
+
+    lateConflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}は遅番不可ですが遅番に入っています`,
+        body: `${day.date}(${day.weekday}) の遅番配置を見直してください。`,
+        label: "遅番"
+      });
+    });
+
+    dayConflicts.forEach((person) => {
+      alerts.push({
+        level: "danger",
+        icon: "!",
+        title: `${person.name}の希望条件と日勤が合っていません`,
+        body: `${day.date}(${day.weekday}) は${getRequest(person, day)}ですが、日勤で配置されています。`,
+        label: "希望条件"
+      });
+    });
+  });
+
+  staffList.forEach((person) => {
+    const workingDays = days.filter((day) => isWorkingShift(shiftList[day.date][person.id]));
+    const weeklyTarget = person.weekly * 4;
+    const maxStreak = getMaxStreak(person, shiftList);
+    if (maxStreak >= 6) {
+      alerts.push({
+        level: "info",
+        icon: "i",
+        title: `${person.name}の連勤が多めです`,
+        body: `最大${maxStreak}連勤です。勤務日数は月内${workingDays.length}日です。`,
+        label: "連勤"
+      });
+    }
+
+    const saturdayCount = days.filter((day) => day.weekday === "土" && isWorkingShift(shiftList[day.date][person.id])).length;
+    const averageSaturday = days.filter((day) => day.weekday === "土").length / Math.max(staffList.length, 1);
+    if (saturdayCount >= Math.ceil(averageSaturday) + 2) {
+      alerts.push({
+        level: "info",
+        icon: "i",
+        title: `${person.name}に土曜勤務が偏っています`,
+        body: `土曜勤務が${saturdayCount}回あります。公平性の確認に使えます。`,
+        label: "土曜"
+      });
+    }
+
+    if (workingDays.length > weeklyTarget + 4) {
+      alerts.push({
+        level: "info",
+        icon: "i",
+        title: `${person.name}の勤務日数が希望より多めです`,
+        body: `月内${workingDays.length}日勤務です。週${person.weekly}日希望を大きく超えていないか確認してください。`,
+        label: "勤務過多"
+      });
+    }
+
+    if (workingDays.length < Math.max(0, weeklyTarget - 4)) {
+      alerts.push({
+        level: "info",
+        icon: "i",
+        title: `${person.name}の勤務日数が希望より少なめです`,
+        body: `月内${workingDays.length}日勤務です。週${person.weekly}日希望に大きく足りない可能性があります。`,
+        label: "勤務不足"
+      });
+    }
+  });
+
+  if (!alerts.length) {
+    alerts.push({
+      level: "info",
+      icon: "✓",
+      title: "大きな注意点はありません",
+      body: "この期間のサンプル条件では、目立つ不足や希望休の重なりはありません。",
+      label: "確認済"
+    });
+  }
+
+  return alerts;
+}
+
+function getRequest(person, day) {
+  return requestFor(person, day);
+}
+
+function minimumStaff(day) {
+  if (day.weekday === "日") return 0;
+  if (day.weekday === "土") return 2;
+  return 3;
+}
+
+function getMaxStreak(person, shiftList) {
+  let current = 0;
+  let max = 0;
+  days.forEach((day) => {
+    if (isWorkingShift(shiftList[day.date][person.id])) {
+      current += 1;
+      max = Math.max(max, current);
+    } else {
+      current = 0;
+    }
+  });
+  return max;
+}
+
+function requestMiniBadge(value) {
+  if (value === "希望休") return '<span class="request-mini hope">希</span>';
+  if (value === "有休希望") return '<span class="request-mini hope">有</span>';
+  if (value === "勤務不可") return '<span class="request-mini unavailable">不</span>';
+  if (value === "早番のみ可") return '<span class="request-mini only">早</span>';
+  if (value === "遅番のみ可") return '<span class="request-mini only">遅</span>';
+  if (value === "午前のみ可") return '<span class="request-mini only">午</span>';
+  return "";
+}
+
+function shiftClass(value) {
+  const classes = {
+    早番: "shift-early",
+    日勤: "shift-day",
+    遅番: "shift-late",
+    休み: "shift-off",
+    希望休: "shift-hope",
+    有休: "shift-paid",
+    未設定: "shift-unset"
+  };
+  return classes[value] || "";
+}
+
+function dogMascotMarkup(size = "") {
+  return `
+    <div class="dog-mascot ${size === "small" ? "dog-small" : ""}" aria-hidden="true">
+      <img class="dog-photo" src="dog-mascot-cutout.png" alt="" />
+    </div>
+  `;
+}
+
+function sampleNote(staffId, date) {
+  const notes = {
+    "sato-6/1": "16時まで",
+    "takahashi-6/5": "午前のみ",
+    "yamamoto-6/13": "土曜対応可"
+  };
+  return notes[`${staffId}-${date}`] || "";
+}
+
+function yesNo(value) {
+  return value ? '<span class="tag">可</span>' : '<span class="tag red">不可</span>';
+}
+
+function input(label, value) {
+  return `
+    <div class="field">
+      <label>${label}</label>
+      <input type="text" value="${value}" />
+    </div>
+  `;
+}
+
+function selectField(label, value) {
+  return `
+    <div class="field">
+      <label>${label}</label>
+      <select>
+        <option ${value === "可" ? "selected" : ""}>可</option>
+        <option ${value === "不可" ? "selected" : ""}>不可</option>
+      </select>
+    </div>
+  `;
+}
+
+function checkField(label, values) {
+  const weekdays = ["月", "火", "水", "木", "金", "土", "日"];
+  return `
+    <div class="field full">
+      <label>${label}</label>
+      <div class="check-row">
+        ${weekdays.map((day) => `
+          <label><input type="checkbox" ${values.includes(day) ? "checked" : ""} />${day}</label>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+normalizeShiftData();
+init();
+
+</script>
+  </body>
+</html>
